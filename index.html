@@ -1,40 +1,19 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Room</title>
-
+<meta charset="utf-8">
+<title>3D Test</title>
 <style>
-body{
-    margin:0;
-    overflow:hidden;
-}
-#info{
-    position:absolute;
-    top:10px;
-    left:10px;
-    background:rgba(0,0,0,.7);
-    color:white;
-    padding:10px;
-    font-family:Arial;
-}
+body{margin:0;}
+canvas{display:block;}
 </style>
 </head>
 <body>
 
-<div id="info">
-W A S D للحركة<br>
-حرك الماوس للنظر حولك
-</div>
-
 <script type="module">
-
-import * as THREE from 'https://unpkg.com/three@0.165.0/build/three.module.js';
-import { PointerLockControls } from 'https://unpkg.com/three@0.165.0/examples/jsm/controls/PointerLockControls.js';
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x202020);
 
 const camera = new THREE.PerspectiveCamera(
 75,
@@ -43,125 +22,28 @@ window.innerWidth/window.innerHeight,
 1000
 );
 
-const renderer = new THREE.WebGLRenderer({antialias:true});
+const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth,window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-const light = new THREE.PointLight(0xffffff,2);
-light.position.set(0,8,0);
-scene.add(light);
-
-scene.add(new THREE.AmbientLight(0xffffff,0.5));
-
-const controls = new PointerLockControls(camera,document.body);
-
-document.body.addEventListener("click",()=>{
-    controls.lock();
-});
-
-scene.add(controls.getObject());
-
-/* أرضية */
-const floor = new THREE.Mesh(
-new THREE.BoxGeometry(10,0.2,8),
-new THREE.MeshStandardMaterial({color:0x555555})
+const cube = new THREE.Mesh(
+new THREE.BoxGeometry(),
+new THREE.MeshNormalMaterial()
 );
-floor.position.y=-0.1;
-scene.add(floor);
 
-/* الجدران */
-const wallMaterial =
-new THREE.MeshStandardMaterial({color:0xdddddd});
+scene.add(cube);
 
-function wall(x,y,z,w,h,d){
-    const m = new THREE.Mesh(
-        new THREE.BoxGeometry(w,h,d),
-        wallMaterial
-    );
-    m.position.set(x,y,z);
-    scene.add(m);
-}
-
-wall(0,1.5,-4,10,3,0.2);
-wall(-5,1.5,0,0.2,3,8);
-wall(5,1.5,0,0.2,3,8);
-wall(0,1.5,4,10,3,0.2);
-
-/* سرير */
-const bed = new THREE.Mesh(
-new THREE.BoxGeometry(2.5,0.6,2),
-new THREE.MeshStandardMaterial({color:0x3333ff})
-);
-bed.position.set(0,0.3,-2.5);
-scene.add(bed);
-
-/* مكتب */
-const desk = new THREE.Mesh(
-new THREE.BoxGeometry(2,1,0.8),
-new THREE.MeshStandardMaterial({color:0x8b5a2b})
-);
-desk.position.set(3,0.5,-2);
-scene.add(desk);
-
-/* شاشة */
-const monitor = new THREE.Mesh(
-new THREE.BoxGeometry(1,0.6,0.05),
-new THREE.MeshStandardMaterial({color:0x000000})
-);
-monitor.position.set(3,1.4,-2);
-scene.add(monitor);
-
-/* نافذة */
-const windowMesh = new THREE.Mesh(
-new THREE.BoxGeometry(2,1.2,0.05),
-new THREE.MeshStandardMaterial({
-color:0x88ccff,
-transparent:true,
-opacity:0.5
-})
-);
-windowMesh.position.set(-4.9,1.7,0);
-scene.add(windowMesh);
-
-/* الحركة */
-const keys = {};
-
-document.addEventListener("keydown",(e)=>{
-    keys[e.key.toLowerCase()] = true;
-});
-
-document.addEventListener("keyup",(e)=>{
-    keys[e.key.toLowerCase()] = false;
-});
+camera.position.z = 3;
 
 function animate(){
-
-    requestAnimationFrame(animate);
-
-    if(keys["w"]) controls.moveForward(0.08);
-    if(keys["s"]) controls.moveForward(-0.08);
-    if(keys["a"]) controls.moveRight(-0.08);
-    if(keys["d"]) controls.moveRight(0.08);
-
-    renderer.render(scene,camera);
+requestAnimationFrame(animate);
+cube.rotation.x += 0.01;
+cube.rotation.y += 0.01;
+renderer.render(scene,camera);
 }
 
-camera.position.set(0,1.7,2);
-
 animate();
-
-window.addEventListener("resize",()=>{
-    camera.aspect =
-    window.innerWidth/window.innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-    );
-});
-
 </script>
+
 </body>
 </html>
